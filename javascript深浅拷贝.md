@@ -142,3 +142,5 @@ function copy3(x) {
 }
 ```
 
+>参考：https://segmentfault.com/a/1190000016672263
+
