@@ -108,6 +108,17 @@ var descending = nums.sort(function(a1, a2) {
 	return a2 - a1;
 })
 console.log(descending); // [30, 13, 8, 1]
+//冒泡排序
+var nums = [1, 8, 13, 30]; 
+for(let j = 0;j < nums.length - 1;j++){
+    for(let i = 0;i < nums.length - 1 - j;i++){
+        if(nums[i] > nums[i+1]){
+            let temp = nums[i];
+            nums[i] = nums[i+1];
+            nums[i+1] = temp;
+        }
+    }
+}
 ```
 
 ## 6.数组倒序(reverse())
@@ -289,4 +300,153 @@ Array.prototype.removeDuplicate = function () {
 var result = [1, 2, 3, 3, 4, 5].removeDuplicate();
 console.log(result); // [1, 2, 3, 4, 5]
 ```
+
+## 13.reduce详解
+
+### 为什么用
+
+逼格高...
+
+### 怎么用
+
+```javascript
+/**
+ *  1、previousValue （上一次调用回调返回的值，或者是提供的初始值（initialValue））
+    2、currentValue （数组中当前被处理的元素）
+    3、index （当前元素在数组中的索引）
+    4、array （调用 reduce 的数组）
+    5、initialValue （作为第一次调用 callback 的第一个参数。）
+ */
+arr.reduce((previousValue,currentValue,index,array) =>{
+    
+},initialValue)
+//例（不添加initialValue的情况）
+var arr = [1, 2, 3, 4];
+var sum = arr.reduce(function(prev, cur, index, arr) {
+    console.log(prev, cur, index);
+    return prev + cur;
+})
+console.log(arr, sum);
+//打印结果
+//1 2 1
+//3 3 2
+//6 4 3
+//[1, 2, 3, 4] 10
+//这里可以看出，上面的例子index是从1开始的，第一次的prev的值是数组的第一个值。数组长度是4，但是reduce函数循环3次。
+//例（添加initialValue的情况）
+var  arr = [1, 2, 3, 4];
+var sum = arr.reduce(function(prev, cur, index, arr) {
+    console.log(prev, cur, index);
+    return prev + cur;
+}，0) //注意这里设置了初始值
+console.log(arr, sum);
+//打印结果：
+//0 1 0
+//1 2 1
+//3 3 2
+//6 4 3
+//[1, 2, 3, 4] 10
+//这个例子index是从0开始的，第一次的prev的值是我们设置的初始值0，数组长度是4，reduce函数循环4次。
+```
+
+> 如果没有提供initialValue，reduce 会从索引1的地方开始执行 callback 方法，跳过第一个索引。如果提供initialValue，从索引0开始。
+>
+> 注意：如果如果数组为空，会抛出错误："TypeError: Reduce of empty array with no initial value"；
+>
+> 所以一般来说我们提供初始值通常更安全
+
+### 高级用法
+
+#### 计算元素出现的次数
+
+```javascript
+//计算字符串中某个字符串出现的次数
+let str = 'dfafjghjdahgjadjfghdakghajkghfjkghkfhagkjagkaz';
+function num(str){
+    let returnData = str.split('').reduce((total,value,index,arr) =>{
+        if(value in total){
+            total[value]++;
+        }else{
+            total[value] = 1;
+        };
+        return total;
+    },{});
+    return returnData;
+};
+console.log(this.num(str));
+//{d: 4, f: 5, a: 8, j: 7, g: 8, …}
+```
+
+#### 数组去重
+
+```javascript
+//数组去重
+let arr1 = [1,2,3,4,5,5,6,6,7,7,8];
+function reduce(arr){
+    let returnData = [];
+    arr.reduce((total, currentValue, currentIndex, arr) =>{
+        if(!returnData.includes(currentValue)){
+            returnData.push(currentValue);
+        };
+    },0);
+    return returnData;
+};
+console.log(this.reduce(arr1));
+//[1, 2, 3, 4, 5, 6, 7, 8]
+```
+
+#### 数组拉平
+
+```javascript
+//数组拉平(二维数组)
+let arr = [[0, 1], [2, 3], [4, 5]];
+function flat(arr){
+    let newArr = arr.reduce((pre,cur)=>{
+        return pre.concat(cur)
+    },[]);
+    return newArr;
+};
+console.log(this.flat(arr));
+// [0, 1, 2, 3, 4, 5]
+//数组拉平(多维数组)
+let arr = [[0, 1], [2, 3], [4, 5,[1,2,3]]];
+function flat(arr){
+    let newArr = arr.reduce((pre,cur)=>{
+        return pre.concat(Array.isArray(cur) ? flat(cur) : cur);
+    },[]);
+    return newArr;
+}
+console.log(this.flat(arr));
+//[0, 1, 2, 3, 4, 5, 1, 2, 3]
+```
+
+#### 对象数组属性求和
+
+```javascript
+let arr = [
+    {
+        subject: 'math',
+        score: 10
+    },
+    {
+        subject: 'chinese',
+        score: 20
+    },
+    {
+        subject: 'english',
+        score: 30
+    }
+];
+
+function flat(arr){
+    let sum = arr.reduce(function(prev, cur) {
+        return cur.score + prev;
+    }, 0);
+    return sum;
+}
+console.log(this.flat(arr));
+//60
+```
+
+
 
